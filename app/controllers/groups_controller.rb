@@ -33,7 +33,7 @@ class GroupsController < ApplicationController
       render :edit
     end
   end
-
+  
   private
   def group_params
     params.require(:group).permit(:name,:introduction,:image)
