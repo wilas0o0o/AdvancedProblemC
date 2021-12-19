@@ -7,8 +7,9 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(group_params)
     @group.owner_id = current_user.id
+    @group.users << current_user
     if @group.save
-      redirect_to groups_path
+      redirect_to groups_path, notice: "You have created new group."
     else
       render :new
     end
@@ -21,6 +22,8 @@ class GroupsController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
+    @group_members = @group.users.all
+    @book = Book.new
   end
 
   def edit
@@ -28,12 +31,24 @@ class GroupsController < ApplicationController
 
   def update
     if @group.update(group_params)
-      redirect_to groups_path
+      redirect_to groups_path, notice: "You have updated group."
     else
       render :edit
     end
   end
-  
+
+  def join
+    @group = Group.find(params[:group_id])
+    @group.users << current_user
+    redirect_to groups_path, notice: "You have joined in group."
+  end
+
+  def leave
+    @group = Group.find(params[:group_id])
+    @group.users.delete(current_user)
+    redirect_to groups_path, notice: "You have left group."
+  end
+
   private
   def group_params
     params.require(:group).permit(:name,:introduction,:image)
